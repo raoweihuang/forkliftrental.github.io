@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>车辆销售租赁管理系统</title>
+  <script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div style="text-align:center; margin-bottom:20px;">
+  <h1 class="page-title">车辆销售租赁管理系统</h1>
+</div>
+
+<div id="sdkError" class="card" style="display:none; background:#fee2e2; color:#dc2626; border-left:4px solid #dc2626;">
+  SDK加载失败，请检查网络或刷新页面
+</div>
+
+<div class="card search-card">
+  <input class="search-input" id="search" placeholder="输入关键词搜索">
+  <button class="btn-search" onclick="doSearch()">搜索</button>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" data-target="bus">商务信息</div>
+  <div class="tab" data-target="pro">库存信息</div>
+  <div class="tab" data-target="fin">销售财务</div>
+  <div class="tab" data-target="ren">租赁财务</div>
+  <div class="tab" data-target="mtn">维保信息</div>
+  <div class="tab" data-target="otr">其他信息</div>
+</div>
+
+<!-- 商务信息 -->
+<div class="section show" id="bus">
+  <div class="card">
+    <div class="card-title">添加商务信息</div>
+    <div class="form-grid">
+      <div class="form-item">
+        <label for="bus_name">客户名称</label>
+        <input id="bus_name">
+      </div>
+      <div class="form-item">
+        <label for="bus_phone">联系电话</label>
+        <input id="bus_phone">
+      </div>
+      <div class="form-item">
+        <label for="bus_user">对接人</label>
+        <input id="bus_user">
+      </div>
+      <div class="form-item">
+        <label for="bus_status">跟进状态</label>
+        <input id="bus_status">
+      </div>
+    </div>
+    <div class="form-item">
+      <label for="bus_intent">合作意向</label>
+      <textarea id="bus_intent"></textarea>
+    </div>
+    <input type="hidden" id="bus_id">
+    <button class="btn-submit" onclick="saveBusiness()">保存</button>
+  </div>
+  <div class="table-box"><table id="bus_table"></table></div>
+</div>
+
+<!-- 库存信息 -->
+<div class="section" id="pro">
+  <div class="card">
+    <div class="card-title">添加库存信息</div>
+    <div class="form-grid">
+      <div class="form-item">
+        <label for="pro_name">库存名称</label>
+        <input id="pro_name">
+      </div>
+      <div class="form-item">
+        <label for="pro_model">型号规格</label>
+        <input id="pro_model">
+      </div>
+      <div class="form-item">
+        <label for="pro_stock">库存数量</label>
+        <input id="pro_stock" type="number">
+      </div>
+    </div>
+    <div class="form-item">
+      <label for="pro_remark">备注</label>
+      <textarea id="pro_remark"></textarea>
+    </div>
+    <input type="hidden" id="pro_id">
+    <button class="btn-submit" onclick="saveProduct()">保存</button>
+  </div>
+  <div class="table-box"><table id="pro_table"></table></div>
+</div>
+
+<!-- 销售财务 -->
+<div class="section" id="fin">
+  <div class="card">
+    <div class="card-title">添加销售财务信息</div>
+    <div class="stat-row">
+      <div class="stat-item"><div class="stat-label">总金额</div><div class="stat-value" id="fin_total">0</div></div>
+      <div class="stat-item"><div class="stat-label">已收款</div><div class="stat-value" id="fin_ok">0</div></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-item">
+        <label for="fin_contract">合同编号</label>
+        <input id="fin_contract">
+      </div>
+      <div class="form-item">
+        <label for="fin_name">客户名称</label>
+        <input id="fin_name">
+      </div>
+      <div class="form-item">
+        <label for="fin_money">金额(元)</label>
+        <input id="fin_money" type="number">
+      </div>
+      <div class="form-item">
+        <label for="fin_status">收款状态</label>
+        <input id="fin_status" placeholder="已收/未收">
+      </div>
+      <div class="form-item">
+        <label for="fin_date">结算日期</label>
+        <input id="fin_date" type="date">
+      </div>
+    </div>
+    <div class="form-item">
+      <label for="fin_remark">备注</label>
+      <textarea id="fin_remark"></textarea>
+    </div>
+    <input type="hidden" id="fin_id">
+    <button class="btn-submit" onclick="saveFinance()">保存</button>
+  </div>
+  <div class="table-box"><table id="fin_table"></table></div>
+</div>
+
+<!-- 租赁财务 -->
+<div class="section" id="ren">
+  <div class="card">
+    <div class="card-title">添加租赁财务信息</div>
+    <div class="stat-row">
+      <div class="stat-item"><div class="stat-label">租赁总金额</div><div class="stat-value" id="ren_total_all">0</div></div>
+      <div class="stat-item"><div class="stat-label">已收租金</div><div class="stat-value" id="ren_rent_all">0</div></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-item">
+        <label for="ren_contract">合同编号</label>
+        <input id="ren_contract">
+      </div>
+      <div class="form-item">
+        <label for="ren_name">客户名称</label>
+        <input id="ren_name">
+      </div>
+      <div class="form-item">
+        <label for="ren_total_money">总金额(元)</label>
+        <input id="ren_total_money" type="number">
+      </div>
+      <div class="form-item">
+        <label for="ren_rent">租金(元)</label>
+        <input id="ren_rent" type="number">
+      </div>
+      <div class="form-item">
+        <label for="ren_period">租赁期数</label>
+        <input id="ren_period" type="number">
+      </div>
+      <div class="form-item">
+        <label for="ren_status">收款状态</label>
+        <input id="ren_status" placeholder="已收/部分/未收">
+      </div>
+      <div class="form-item">
+        <label for="ren_start">起租日期</label>
+        <input id="ren_start" type="date">
+      </div>
+      <div class="form-item">
+        <label for="ren_end">止租日期</label>
+        <input id="ren_end" type="date">
+      </div>
+    </div>
+    <div class="form-item">
+      <label for="ren_remark">备注</label>
+      <textarea id="ren_remark"></textarea>
+    </div>
+    <input type="hidden" id="ren_id">
+    <button class="btn-submit" onclick="saveRent()">保存</button>
+  </div>
+  <div class="table-box"><table id="ren_table"></table></div>
+</div>
+
+<!-- 维保信息 -->
+<div class="section" id="mtn">
+  <div class="card">
+    <div class="card-title">添加维保信息</div>
+    <div class="form-grid">
+      <div class="form-item">
+        <label for="mtn_contract">合同编号</label>
+        <input id="mtn_contract">
+      </div>
+      <div class="form-item">
+        <label for="mtn_device">车辆型号</label>
+        <input id="mtn_device">
+      </div>
+      <div class="form-item">
+        <label for="mtn_name">客户名称</label>
+        <input id="mtn_name">
+      </div>
+      <div class="form-item">
+        <label for="mtn_date">维保日期</label>
+        <input id="mtn_date" type="date">
+      </div>
+      <div class="form-item">
+        <label for="mtn_user">负责人</label>
+        <input id="mtn_user">
+      </div>
+    </div>
+    <div class="form-item">
+      <label for="mtn_content">维保内容</label>
+      <textarea id="mtn_content"></textarea>
+    </div>
+    <input type="hidden" id="mtn_id">
+    <button class="btn-submit" onclick="saveMaintain()">保存</button>
+  </div>
+  <div class="table-box"><table id="mtn_table"></table></div>
+</div>
+
+<!-- 其他信息 -->
+<div class="section" id="otr">
+  <div class="card">
+    <div class="card-title">添加其他信息</div>
+    <div class="form-item">
+      <label for="otr_title">标题</label>
+      <input id="otr_title">
+    </div>
+    <div class="form-item">
+      <label for="otr_content">内容记录</label>
+      <textarea id="otr_content"></textarea>
+    </div>
+    <input type="hidden" id="otr_id">
+    <button class="btn-submit" onclick="saveOther()">保存</button>
+  </div>
+  <div class="table-box"><table id="otr_table"></table></div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
